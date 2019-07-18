@@ -14,14 +14,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class AdController extends AbstractController
 {
     /**
-     * @Route("/ads", name="ads_index")
+     * @Route("/ads/{page?1}", name="ads_index")
      */
-    public function index(AdRepository $repo)
+    public function index(AdRepository $repo, $page)
     {
-        $ads = $repo->findAll();
+        $limit = 6;
 
+        $start = $page * $limit - $limit;
+
+        $total = count($repo->findAll());
+
+        $pages = ceil($total / $limit);
+        
         return $this->render('ad/index.html.twig', [
-            'ads' => $ads 
+            'paginate' => $pages,
+            'ads' => $repo->findBy([], [], $limit, $start),
+            'page' => $page
         ]);
     }
     
@@ -37,11 +45,8 @@ class AdController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()){
-            /*
-            Pour nchaque image ajoutée à l'entité $ad, definir la propriete Ad dans l'entité Image et persister l'entité Image
-            */ 
 
-            foreach ($ad->getImages() as $image) {
+            foreach($ad->getImages() as $image){
                 $image->setAd($ad);
                 $manager->persist($image);
             }
@@ -69,6 +74,39 @@ class AdController extends AbstractController
         #$ad = $repo->findOneBySlug($slug);
         return $this->render('ad/show.html.twig', [
             'ad' => $ad
+        ]);
+    }
+
+    /**
+     * @Route("/ads/{slug}/edit", name="ads_edit")
+     * 
+     * @return Response
+     */
+    public function edit(Ad $ad, Request $request, ObjectManager $manager)
+    {
+        $form = $this->createForm(AnnonceType::class, $ad);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()){
+
+            foreach($ad->getImages() as $image){
+                $image->setAd($ad);
+                $manager->persist($image);
+            }
+
+            $manager->persist($ad);
+            $manager->flush();
+
+            $this->addFlash('success', "L'annonce <strong>{$ad->getTitle()}</strong> a bien été modifée");
+
+            return $this->redirectToRoute('ads_show', [
+                'slug' => $ad->getSlug()
+            ]);
+        }       
+
+        return $this->render('ad/edit.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 }

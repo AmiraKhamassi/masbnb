@@ -16,7 +16,7 @@ class ImageType extends AbstractType
         $builder
             ->add('url', UrlType::class, [
                 'attr' => [
-                    'placeholder' => "URL de l'image"
+                    'placeholder' => "Url de l'image"
                 ]
             ])
             ->add('caption', TextType::class, [
@@ -24,7 +24,7 @@ class ImageType extends AbstractType
                     'placeholder' => "Titre de l'image"
                 ]
             ])
-        ; 
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
