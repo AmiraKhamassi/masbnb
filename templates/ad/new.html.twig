@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme form _self %}
+
+{% block title %}Creation d'une annonce{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Créer une nouvelle annonce</h1>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+{% endblock %}
+
+{% block _annonce_images_widget %}
+    <p>Ici, vous pouvez ajoutez vos propres images</p>
+    {{ form_widget(form) }}
+
+    <input type="hidden" id="widgets-counter" value="0">
+
+    <div class="form-group">	
+        <button type="button" class="btn btn-primary" id="add-image">Ajouter une image</button>
+    </div>
+{% endblock %}
+
+{% block _annonce_images_entry_row %}
+    {{ form_widget(form) }}
+{% endblock %}
+
+{% block _annonce_images_entry_widget %}
+    <div class="form-group" id="block_{{ id }}">
+        <div class="row">
+            <div class="col-18">
+                <div class="row">
+                    <div class="col">
+                        {{ form_widget(form.url) }}
+                    </div>
+                    <div class="col">
+                        {{ form_widget(form.caption) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <button data-action='delete' data-target="#block_{{ id }}" type="button" class="btn btn-danger">X</button>
+            </div>
+        </div>  
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $('#add-image').click(function(){
+            const index = +$('#widgets-counter').val();
+
+            const tmpl = $('#annonce_images').data('prototype').replace(/__name__/g, index);
+
+            $('#annonce_images').append(tmpl);
+            $('#widgets-counter').val(index + 1);
+
+            handleDeleteButtons();
+        })
+
+        {# Gestion des boutons de suppressuion #}
+       function handleDeleteButtons(){
+            // Au click sur le bouton avec l'attribut data-action="delete"
+            $('button[data-action="delete"]').click(function(){
+
+                // On récupèère la cible contenu dans l'attribut data-target
+                const target = this.dataset.target;
+
+                // On supprime la cible
+                $(target).remove();
+
+            })
+        }
+        handleDeleteButtons();
+    </script>
+{% endblock %}
+
+{# {% block form_row %}
+    <div class="form-group">
+        {{ form_label(form) }}
+    </div>
+{% endblock %} #}
+
+
+{# {% block text_widget %}
+    <input type="text" name="{{ full_name }}", id="{{ id }}" class="form-control">
+{% endblock %} #}

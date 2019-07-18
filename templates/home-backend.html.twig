@@ -1,0 +1,26 @@
+<a href="{{ path( 'hello', {'prenom':'Jean'} ) }}">Cliquez ici</a>
+<h1> Coucou tout le monde </h1>
+<h2> {{ age }} </h2>
+{% if age >= 18 %}
+    Vous êtes un adulte
+{% else %}
+    Vous êtes un mineur
+{% endif %}
+
+{% for key, value in tableau %}
+    <p>{{ key }}, {{ value }}</p>
+{% endfor %}
+
+<ul>
+{% for i in 0..10 %}
+    <li> {{ i }}</li>
+{% endfor %}
+</ul>
+
+{% for key, value in tableau %}
+    {% if loop.first %}
+        Premiere iteration </br>
+    {% elseif loop.last %}
+        Derniere iteration </br>
+    {% endif %}
+{% endfor %}
